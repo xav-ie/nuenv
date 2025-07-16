@@ -64,4 +64,3 @@ jobs:
         run: |
           nix build --print-build-logs .#stdenv
           cat result/share/hello.txt
-

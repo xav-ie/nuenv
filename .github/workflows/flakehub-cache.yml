@@ -30,4 +30,3 @@ jobs:
       - name: Build dev shell for ${{ matrix.systems.nix-system }} on ${{ matrix.systems.runner }}
         run: |
           nix build .#devShells.${{ matrix.systems.nix-system }}.default
-

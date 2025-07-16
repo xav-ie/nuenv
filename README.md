@@ -1,12 +1,21 @@
-# Nuenv: an experimental Nushell environment for Nix
+# Nuenv: an experimental Nushell environment for Nix - revived!
 
-[![FlakeHub](https://img.shields.io/endpoint?url=https://flakehub.com/f/DeterminateSystems/nuenv/badge)](https://flakehub.com/flake/DeterminateSystems/nuenv)
-![GitHub Actions status badge](https://github.com/DeterminateSystems/nuenv/actions/workflows/ci.yml/badge.svg?branch=main)
+[![FlakeHub](https://img.shields.io/endpoint?url=https://flakehub.com/f/xav-ie/nuenv/badge)](https://flakehub.com/flake/xav-ie/nuenv)
+![GitHub Actions status badge](https://github.com/xav-ie/nuenv/actions/workflows/ci.yml/badge.svg?branch=main)
 
-> [!INFO]
-> Nuenv was a fun and instructive experiment but we don't plan to develop it further at this time, so we've opted to archive this repository.
-> To read more about Nuenv, see the [Nuenv: an experimental Nushell environment for Nix][post] blog post on the [Determinate Systems blog][blog] and the [Nuenv: an experimental derivation builder for Nix][talk] talk at NixCon 2023.
+Old [upstream] has decided to archive the repo:
+
+> Nuenv was a fun and instructive experiment but we don't plan to develop it further at this time,
+> so we've opted to archive this repository.
+> To read more about Nuenv, see the [Nuenv: an experimental Nushell environment for Nix][post] blog
+> post on the [Determinate Systems blog][blog] and the [Nuenv: an experimental derivation builder
+> for Nix][talk] talk at NixCon 2023.
 > Going forward, you're free to use this project [as you see fit](./LICENSE)!
+
+I plan to keep this repo up-to-date with latest-and-greatest Nushell version, update the builders
+and fix misc. bugs, and accept new PRs if you like. Please see [contributing].
+
+---
 
 This repo houses an example project that uses [Nushell] as an alternative builder for [Nix] (whose standard environment uses [Bash]).
 For more information, check out [Nuenv: an experimental Nushell environment for Nix][post] on the [Determinate Systems blog][blog].
@@ -27,7 +36,7 @@ With Nix installed, you can [realise] a Nix [derivation] that uses Nushell rathe
 nix build --print-build-logs
 
 # Or without cloning this repo
-nix build --print-build-logs "https://flakehub.com/f/DeterminateSystems/nuenv/*.tar.gz"
+nix build --print-build-logs "https://flakehub.com/f/xav-ie/nuenv/*.tar.gz"
 ```
 
 You should see build output like this:
@@ -77,7 +86,7 @@ Here's a straightforward example:
 {
   inputs = {
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2311.*.tar.gz";
-    nuenv.url = "https://flakehub.com/f/DeterminateSystems/nuenv/*.tar.gz";
+    nuenv.url = "https://flakehub.com/f/xav-ie/nuenv/*.tar.gz";
   };
 
   outputs = { self, nixpkgs, nuenv }: let
@@ -125,7 +134,7 @@ Here's an example:
 {
   inputs = {
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2311.*.tar.gz";
-    nuenv.url = "https://flakehub.com/f/DeterminateSystems/nuenv/*.tar.gz";
+    nuenv.url = "https://flakehub.com/f/xav-ie/nuenv/*.tar.gz";
   };
 
   outputs = { self, nixpkgs, nuenv }: let
@@ -149,6 +158,7 @@ Here's an example:
 
 [bash]: https://gnu.org/software/bash
 [blog]: https://determinate.systems/posts
+[contributing]: ./CONTRIBUTING.md
 [derivation]: https://zero-to-nix.com/concepts/derivations
 [dni]: https://github.com/DeterminateSystems/nix-installer
 [flake]: https://zero-to-nix.com/concepts/flakes
@@ -159,4 +169,5 @@ Here's an example:
 [realise]: https://zero-to-nix.com/concepts/realisation
 [stdenv]: https://ryantm.github.io/nixpkgs/stdenv/stdenv
 [talk]: https://www.youtube.com/watch?v=QwElUltNsq0
+[upstream]: https://github.com/DeterminateSystems/nuenv
 [writescriptbin]: https://ryantm.github.io/nixpkgs/builders/trivial-builders/#trivial-builder-writeText
