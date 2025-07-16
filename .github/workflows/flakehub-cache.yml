@@ -16,11 +16,12 @@ jobs:
       matrix:
         systems:
           - nix-system: "aarch64-darwin"
-            runner: "macos-latest-xlarge"
-          - nix-system: "x86_64-darwin"
-            runner: "macos-12"
+            runner: "macos-15"
           - nix-system: "x86_64-linux"
             runner: "ubuntu-22.04"
+          # TODO: fix, seems to be broken :/
+          # - nix-system: "x86_64-darwin"
+          #   runner: "macos-12"
     steps:
       - uses: actions/checkout@v3
       - uses: DeterminateSystems/nix-installer-action@main
