@@ -2,17 +2,11 @@
   description = "Nuenv: a Nushell environment for Nix";
 
   inputs = {
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz"; # Provides Nushell v0.87.1
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      rust-overlay,
-    }:
+    { self, nixpkgs }:
     let
       supportedSystems = [
         "x86_64-linux" # 64-bit Intel/AMD Linux
@@ -28,11 +22,8 @@
             pkgs = import nixpkgs {
               inherit system;
               overlays = [
-                self.overlays.nuenv # Supply nixpkgs.nuenv.mkDerivation
-                rust-overlay.overlays.default
-                (final: prev: {
-                  rustToolchain = prev.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-                })
+                # Supply nixpkgs.nuenv.mkDerivation
+                self.overlays.nuenv
               ];
             };
             inherit system;
