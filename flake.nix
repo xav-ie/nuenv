@@ -327,5 +327,45 @@
           };
         }
       );
+
+      checks = forAllSystems (
+        { pkgs, system }:
+        {
+          # Unified check that builds all CI targets
+          all = pkgs.runCommand "nuenv-all-checks" 
+            {
+              buildInputs = [
+                self.packages.${system}.default
+                self.packages.${system}.helloNoDebug
+                self.packages.${system}.direct
+                self.packages.${system}.other
+                self.packages.${system}.githubSrc
+                self.packages.${system}.stdenv
+              ];
+            } 
+            ''
+              # Verify all CI targets by reading their expected output files
+              echo "Verifying default package..."
+              cat ${self.packages.${system}.default}/share/hello.txt
+
+              echo "Verifying helloNoDebug package..."
+              cat ${self.packages.${system}.helloNoDebug}/share/hello.txt
+
+              echo "Verifying direct package..."
+              cat ${self.packages.${system}.direct}/share/nushell-version.txt
+
+              echo "Verifying other package..."
+              cat ${self.packages.${system}.other}/share/copied.txt
+
+              echo "Verifying githubSrc package..."
+              cat ${self.packages.${system}.githubSrc}/share/README.md
+
+              echo "Verifying stdenv package..."
+              cat ${self.packages.${system}.stdenv}/share/hello.txt
+
+              echo "All checks passed!" > $out
+            '';
+        }
+      );
     };
 }
