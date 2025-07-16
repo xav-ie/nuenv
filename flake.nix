@@ -3,10 +3,8 @@
 
   inputs = {
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz"; # Provides Nushell v0.87.1
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -63,7 +61,12 @@
 
             writeShellApplication = final.callPackage ./lib/writeShellApplication.nix { };
 
-            # TODO: mkShell
+            mkShell =
+              self.lib.mkNushellShell
+                # Provide Nushell package
+                prev.nushell
+                # Provide mkShell function
+                prev.mkShell;
           };
         };
       };
@@ -143,6 +146,28 @@
               inherit writeTextFile lib;
               nushell = nushellPkg;
             };
+
+          /*
+            mkNushellShell creates a nushell shell environment
+
+            Type:
+              [package] -> [function] -> package
+
+            Example:
+              let mkNushellShell = mkNushellShell
+                pkgs.nushell
+                pkgs.mkShell;
+              let shell = mkNushellShell {
+                name = "my-nuenv-shell";
+                packages = [ pkgs.hello ];
+              };
+          */
+          mkNushellShell =
+            # nushell package to use for shell environment
+            nushellPkg:
+            # mkShell function from nixpkgs
+            mkShell:
+            internalLib.mkNushellShell nushellPkg mkShell;
         };
 
       devShells = forAllSystems (
@@ -166,6 +191,16 @@
             shellHook = ''
               nu --config ${./nuenv/user-env.nu}
             '';
+          };
+
+          # An example using the new nuenv.mkShell function
+          example = pkgs.nuenv.mkShell {
+            name = "example-nuenv-shell";
+            packages = with pkgs; [ lolcat ];
+            shellHook = # nu
+              ''
+                echo "Welcome to Nuenv!" | lolcat
+              '';
           };
         }
       );

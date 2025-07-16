@@ -146,4 +146,68 @@
       '';
       executable = true;
     };
+
+  # A mkShell wrapper that provides Nushell-based development shells
+  mkNushellShell =
+    nushell: # nixpkgs.nushell (from overlay)
+    mkShell: # nixpkgs.mkShell (from overlay)
+
+    {
+      /*
+        The name of the shell environment
+        Type: String
+      */
+      name ? "nuenv-shell",
+      /*
+        Packages to include in the shell environment
+        Type: [Derivation]
+      */
+      packages ? [ ],
+      /*
+        Additional shell hook commands to run on shell initialization
+        Type: String
+      */
+      shellHook ? "",
+      /*
+        Whether to start with Nushell by default
+        Type: Boolean
+      */
+      startNushell ? true,
+      /*
+        Catch user-supplied env vars
+        Type: AttrSet
+      */
+      ...
+    }@attrs:
+
+    let
+      # Filter out our custom attributes
+      reservedAttrs = [
+        "envFile"
+        "startNushell"
+      ];
+
+      # Pass through all other attributes to mkShell
+      shellAttrs = removeAttrs attrs reservedAttrs;
+
+      # Construct the shell hook
+      nuShellHook =
+        if startNushell then
+          ''
+            echo "Starting Nushell with Nuenv environment..."
+            exec ${nushell}/bin/nu
+          ''
+        else
+          "";
+
+      # Combine user shell hook with our Nushell hook
+      combinedShellHook = shellHook + nuShellHook;
+    in
+    mkShell (
+      shellAttrs
+      // {
+        inherit name packages;
+        shellHook = combinedShellHook;
+      }
+    );
 }
