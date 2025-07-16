@@ -64,6 +64,19 @@ in
     Type: AttrSet
   */
   derivationArgs ? { },
+  /*
+    The nushell package to use for the script interpreter.
+
+    Type: Derivation
+  */
+  nushellPackage ? nushell,
+  /*
+    Extra arguments to pass into nushell invoker
+    Defaults to allowing stdin with "--stdin".
+
+    Type: [String]
+  */
+  nushellArgs ? [ "--stdin" ],
 }:
 writeTextFile {
   inherit name meta derivationArgs;
@@ -73,7 +86,7 @@ writeTextFile {
   preferLocalBuild = false;
   text =
     ''
-      #!${nushell}/bin/nu
+      #!/usr/bin/env -S ${lib.concatStringsSep " " ([ (lib.getExe nushellPackage) ] ++ nushellArgs)}
     ''
     + lib.optionalString (runtimeEnv != null) ''
 
@@ -81,7 +94,7 @@ writeTextFile {
     ''
     + lib.optionalString (runtimeInputs != [ ]) ''
 
-      $env.PATH = ${toNu (makeBinPathArray runtimeInputs)} ++ $env.PATH
+      $env.PATH = ${toNu (makeBinPathArray runtimeInputs)} ++ ($env.PATH? | default [])
     ''
     + ''
 
@@ -92,7 +105,7 @@ writeTextFile {
     if checkPhase == null then
       ''
         runHook preCheck
-        ${nushell}/bin/nu --commands "nu-check --debug '$target'"
+        ${lib.getExe nushellPackage} --commands "nu-check --debug '$target'"
         runHook postCheck
       ''
     else
