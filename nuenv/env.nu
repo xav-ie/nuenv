@@ -1,17 +1,17 @@
 # Logging
 
-export def color [color: string, msg: string] { $"(ansi $color)($msg)(ansi reset)" }
+export def color [color: string, msg] { $"(ansi $color)($msg)(ansi reset)" }
 
-export def blue [msg: string] { color "blue" $msg }
-export def green [msg: string] { color "green" $msg }
-export def red [msg: string] { color "red" $msg }
-export def purple [msg: string] { color "purple" $msg }
-export def yellow [msg: string] { color "yellow" $msg }
+export def blue [msg] { color "blue" $msg }
+export def green [msg] { color "green" $msg }
+export def red [msg] { color "red" $msg }
+export def purple [msg] { color "purple" $msg }
+export def yellow [msg] { color "yellow" $msg }
 
-export def banner [text: string] { print $"(red ">>>") (green $text)" }
-export def info [msg: string] { print $"(blue ">") ($msg)" }
-export def error [msg: string] { print $"(red "ERROR") ($msg)" }
-export def item [msg: string] { print $"(purple "+") ($msg)"}
+export def banner [text] { print $"(red ">>>") (green $text)" }
+export def info [msg] { print $"(blue ">") ($msg)" }
+export def error [msg] { print $"(red "ERROR") ($msg)" }
+export def item [msg] { print $"(purple "+") ($msg)"}
 
 # Misc helpers
 
@@ -19,7 +19,7 @@ export def item [msg: string] { print $"(purple "+") ($msg)"}
 export def plural [n: int] { if $n > 1 { "s" } else { "" } }
 
 ## Convert a Nix Boolean into a Nushell Boolean ("1" = true, "0" = false)
-export def envToBool [var: string] {
+export def envToBool [var] {
   ($var | into int) == 1
 }
 
