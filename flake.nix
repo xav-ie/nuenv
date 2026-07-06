@@ -22,6 +22,7 @@
             pkgs = import nixpkgs {
               inherit system;
               overlays = [
+                self.overlays.nushell
                 # Supply nixpkgs.nuenv.mkDerivation
                 self.overlays.nuenv
               ];
@@ -33,6 +34,24 @@
     {
       overlays = rec {
         default = nuenv;
+
+        # Drop this overlay once nixpkgs packages >= 0.114.0.
+        nushell = final: prev: {
+          nushell = prev.nushell.overrideAttrs (_old: rec {
+            version = "0.114.0";
+            src = final.fetchFromGitHub {
+              owner = "nushell";
+              repo = "nushell";
+              tag = version;
+              hash = "sha256-vLWfaci1lAPUXZJU2bfUvVNnMqFr6cMyX+R0aDWvRss=";
+            };
+            cargoDeps = final.rustPlatform.fetchCargoVendor {
+              inherit src;
+              name = "nushell-${version}-vendor";
+              hash = "sha256-3+H1VuqdLxjcPTzkrpNiBmHbWG8g4rr3WuFFQhyyMtI=";
+            };
+          });
+        };
 
         nuenv = final: prev: {
           nuenv = {
