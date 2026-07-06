@@ -10,7 +10,7 @@ jobs:
       ACTIONS_STEP_DEBUG: true
     runs-on: ${{ matrix.systems.runner }}
     permissions:
-      id-token: "write"
+      id-token: "write" # magic-nix-cache → FlakeHub Cache
       contents: "read"
     strategy:
       matrix:
@@ -20,9 +20,16 @@ jobs:
           - nix-system: "x86_64-linux"
             runner: "ubuntu-22.04"
     steps:
-      - uses: actions/checkout@v3
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      # arca first: installs Nix, pulls from our cache, and pushes the full
+      # closure back (its post-job hook). This runs on push-to-main, so the
+      # composite's trusted-ref gate is satisfied and the token is used.
+      - uses: ./.github/actions/nix-cache
+        with:
+          push-token: ${{ secrets.ATTIC_TOKEN }}
+      # FlakeHub Cache too, for public consumers. magic-nix-cache is lazy (won't
+      # cache everything), which is why arca fronts it as the fuller push.
+      - uses: DeterminateSystems/magic-nix-cache-action@908b263ff629f4cc17666315b7fd3ec127c6244d # v14
       - name: Build dev shell for ${{ matrix.systems.nix-system }} on ${{ matrix.systems.runner }}
         run: |
           nix build .#devShells.${{ matrix.systems.nix-system }}.default
