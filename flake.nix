@@ -242,6 +242,10 @@
             ${pkgs.nushell}/bin/nu --env-config ${./nuenv/user-env.nu} --commands "nuenvCommands"
           '';
 
+          nu-check = pkgs.writeShellScriptBin "nu-check" ''
+            exec ${pkgs.nushell}/bin/nu --no-config-file ${./nuenv/ide-check.nu} "$@"
+          '';
+
           # For NixCon
           hello = pkgs.nuenv.mkDerivation {
             name = "hello-nix-nushell";
