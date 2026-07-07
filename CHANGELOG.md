@@ -5,6 +5,18 @@ maintained automatically by [release-please](https://github.com/googleapis/relea
 from [Conventional Commits](https://www.conventionalcommits.org/). Do not edit
 released sections by hand.
 
+## [1.3.0](https://github.com/xav-ie/nuenv/compare/v1.2.0...v1.3.0) (2026-07-07)
+
+
+### Features
+
+* **writeShellApplication:** highlighted ide-check diagnostics + nu-check linter ([30aa83e](https://github.com/xav-ie/nuenv/commit/30aa83ea716a0df3f88323285e8904d31578ba8f))
+
+
+### Miscellaneous
+
+* **release:** set up release-please and CHANGELOG ([4eb68ef](https://github.com/xav-ie/nuenv/commit/4eb68ef40006e1276daa5239a7a205b2fd65fe55))
+
 ## [1.2.0](https://github.com/xav-ie/nuenv/compare/v1.1.2...v1.2.0) (2026-07-06)
 
 ### Features
