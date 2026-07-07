@@ -46,9 +46,14 @@ in
   */
   meta ? { },
   /*
-    The `checkPhase` to run. Defaults to `nu-check`.
+    The `checkPhase` to run. Defaults to statically checking the source with
+    `nu --ide-check` (the shellcheck analogue), failing the build on any error
+    the compiler can prove without running the code and rendering a highlighted
+    context block for each.
 
-    The script path will be given as `$target` in the `checkPhase`.
+    The assembled script path is given as `$target`, and the raw, unwrapped
+    source (`text`) as `$nuSource`; the default check runs against `$nuSource` so
+    it validates your code, not the generated wrapper.
 
     Type: String
   */
@@ -78,6 +83,21 @@ in
   */
   nushellArgs ? [ "--stdin" ],
 }:
+let
+  # The raw, unwrapped source (no shebang / injected env / PATH), so the check
+  # validates the user's code rather than the generated wrapper.
+  nuSource = writeTextFile {
+    name = "${name}-source.nu";
+    inherit text;
+  };
+
+  nu = lib.getExe nushellPackage;
+
+  # The shared linter (also exposed as the `nu-check` package), so the build
+  # check and the CLI share one implementation. Self-contained via
+  # `$nu.current-exe`.
+  nuIdeCheck = ../nuenv/ide-check.nu;
+in
 writeTextFile {
   inherit name meta derivationArgs;
   executable = true;
@@ -102,12 +122,21 @@ writeTextFile {
     '';
 
   checkPhase =
+    let
+      # Exposed to custom checkPhases as well.
+      nuSourceEnv = "nuSource=${nuSource}";
+    in
     if checkPhase == null then
       ''
         runHook preCheck
-        ${lib.getExe nushellPackage} --commands "nu-check --debug '$target'"
+        ${nuSourceEnv}
+        # Static check; fails the build with highlighted context on any error.
+        ${nu} --no-config-file ${nuIdeCheck} ${nuSource}
         runHook postCheck
       ''
     else
-      checkPhase;
+      ''
+        ${nuSourceEnv}
+        ${checkPhase}
+      '';
 }
